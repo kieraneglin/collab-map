@@ -1,0 +1,11 @@
+{
+  "name": "pubg",
+  "version": "0.0.1",
+  "description": "A quick-and-dirty reference for PUBG",
+  "main": "index.js",
+  "author": "Kieran Eglin",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0"
+  }
+}
