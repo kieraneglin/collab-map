@@ -1346,8 +1346,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.element = document.getElementById('map');
           this.context = this.element.getContext('2d');
 
-          this.element.width = window.innerWidth;
-          this.element.height = window.innerHeight;
+          // Check which edge is smaller, then set both edges to that size.  This makes it square and fit in screen
+          var size = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
+          this.element.width = size;
+          this.element.height = size;
         }
 
         _createClass(Canvas, [{
@@ -1418,7 +1420,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_40b6cbf5.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_e725d9fe.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
