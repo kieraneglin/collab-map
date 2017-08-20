@@ -1,68 +1,36 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // TODO: Break out into separate files.  I'll keep it all here for testing sake
+const Mouse = require('./mouse');
+const Canvas = require('./canvas');
 
-  // --- SETUP ---
+document.addEventListener('DOMContentLoaded', () => {
   const room = window.location.href.split('/').pop(); // This is cheeky and gross and I hate myself for it
   const socket = io.connect();
+  const mouse = new Mouse();
+  const canvas = new Canvas();
 
   socket.on('connect', () => {
     socket.emit('room', room);
   });
+  socket.on('draw_line', (data) => {
+    canvas.draw(data.line);
+  });
 
-  // --- END SETUP ---
+  canvas.registerEventListeners(mouse);
 
-  // --- CANVAS ---
-  const mouse = {
-    click: false,
-    move: false,
-    pos: {
-      x: 0,
-      y: 0
-    },
-    pos_prev: false
-  };
-  const canvas = document.getElementById('map');
-  const context = canvas.getContext('2d');
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-
-  // set canvas to full browser width/height
-  canvas.width = width;
-  canvas.height = height;
-
-  // register mouse event handlers
-  canvas.onmousedown = () => {
-    mouse.click = true;
-  };
-  canvas.onmouseup = () => {
-    mouse.click = false;
-  };
-  canvas.onmousemove = (e) => {
-    // normalize mouse position to range 0.0 - 1.0
-    mouse.pos.x = e.clientX / width;
-    mouse.pos.y = e.clientY / height;
-    mouse.move = true;
-  };
-
-  socket.on('draw_line', function (data) {
-    var line = data.line;
-    context.beginPath();
-    context.moveTo(line[0].x * width, line[0].y * height);
-    context.lineTo(line[1].x * width, line[1].y * height);
-    context.stroke();
- });
-
- // main loop, running every 25ms
- function mainLoop() {
-    // check if the user is drawing
-    if (mouse.click && mouse.move && mouse.pos_prev) {
-       // send line to to the server
-       socket.emit('draw_line', { room: room, line: [ mouse.pos, mouse.pos_prev ] });
-       mouse.move = false;
+  const emitLines = () => {
+    if (mouse.click && mouse.move && mouse.previousPos) {
+      socket.emit('draw_line', {
+        room: room,
+        line: [mouse.pos, mouse.previousPos]
+      });
+      mouse.move = false;
     }
-    mouse.pos_prev = {x: mouse.pos.x, y: mouse.pos.y};
-    setTimeout(mainLoop, 25);
- }
+    mouse.previousPos = {
+      x: mouse.pos.x,
+      y: mouse.pos.y
+    };
 
- mainLoop();
+    setTimeout(emitLines, 25); // I should be using requestAnimationFrame, but this is simple enough
+  };
+
+  emitLines();
 });
