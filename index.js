@@ -9,9 +9,9 @@ io.sockets.on('connection', (socket) => {
   socket.on('room', (room) => {
     socket.join(room);
   });
-  
+
   socket.on('draw_line', (data) => {
-    io.sockets.in(data.room).emit('line', data);
+    io.sockets.in(data.room).emit('draw_line', data);
   });
 });
 

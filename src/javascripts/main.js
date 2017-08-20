@@ -1,17 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // TODO: Break out into separate files.  I'll keep it all here for testing sake
+
+  // --- SETUP ---
   const room = window.location.href.split('/').pop(); // This is cheeky and gross and I hate myself for it
-  const id = Math.floor(Math.random() * 9e15); // We need to ignore our own messages, so we need an ID.  This is also weak, but so is my will to live
   const socket = io.connect();
 
   socket.on('connect', () => {
-     socket.emit('room', room);
+    socket.emit('room', room);
   });
 
-  socket.on('line', (data) => {
-     console.log('Incoming line:', data);
-  });
+  // --- END SETUP ---
 
-  setTimeout(() => {
-    socket.emit('draw_line', { room: room, message: 'HEY'});
-  }, 3000);
+  // --- CANVAS ---
+  const mouse = {
+    click: false,
+    move: false,
+    pos: {
+      x: 0,
+      y: 0
+    },
+    pos_prev: false
+  };
+  const canvas = document.getElementById('map');
+  const context = canvas.getContext('2d');
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // set canvas to full browser width/height
+  canvas.width = width;
+  canvas.height = height;
+
+  // register mouse event handlers
+  canvas.onmousedown = () => {
+    mouse.click = true;
+  };
+  canvas.onmouseup = () => {
+    mouse.click = false;
+  };
+  canvas.onmousemove = (e) => {
+    // normalize mouse position to range 0.0 - 1.0
+    mouse.pos.x = e.clientX / width;
+    mouse.pos.y = e.clientY / height;
+    mouse.move = true;
+  };
+
+  socket.on('draw_line', function (data) {
+    var line = data.line;
+    context.beginPath();
+    context.moveTo(line[0].x * width, line[0].y * height);
+    context.lineTo(line[1].x * width, line[1].y * height);
+    context.stroke();
+ });
+
+ // main loop, running every 25ms
+ function mainLoop() {
+    // check if the user is drawing
+    if (mouse.click && mouse.move && mouse.pos_prev) {
+       // send line to to the server
+       socket.emit('draw_line', { room: room, line: [ mouse.pos, mouse.pos_prev ] });
+       mouse.move = false;
+    }
+    mouse.pos_prev = {x: mouse.pos.x, y: mouse.pos.y};
+    setTimeout(mainLoop, 25);
+ }
+
+ mainLoop();
 });
