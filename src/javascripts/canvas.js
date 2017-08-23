@@ -12,6 +12,7 @@ class Canvas {
     this.context.beginPath();
     this.context.moveTo(line[0].x * this.element.width, line[0].y * this.element.height);
     this.context.lineTo(line[1].x * this.element.width, line[1].y * this.element.height);
+    this.context.strokeStyle = "#ffffff";
     this.context.stroke();
   }
   registerEventListeners(mouse) {

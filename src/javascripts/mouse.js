@@ -19,8 +19,8 @@ class Mouse {
   }
   drag(e, canvas) {
     // normalize mouse position to range 0.0 - 1.0
-    this.pos.x = e.clientX / canvas.element.width;
-    this.pos.y = e.clientY / canvas.element.height;
+    this.pos.x = (e.clientX - e.target.offsetLeft) / canvas.element.width;
+    this.pos.y = (e.clientY - e.target.offsetTop) / canvas.element.height;
     this.move = true;
   }
 }
