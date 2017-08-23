@@ -1358,6 +1358,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.context.beginPath();
             this.context.moveTo(data.line[0].x * this.element.width, data.line[0].y * this.element.height);
             this.context.lineTo(data.line[1].x * this.element.width, data.line[1].y * this.element.height);
+            this.context.lineWidth = 2;
             this.context.strokeStyle = data.colour;
             this.context.stroke();
           }
@@ -1436,7 +1437,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_5b00d88b.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_9f65f274.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
