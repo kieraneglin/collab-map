@@ -10,8 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('connect', () => {
     socket.emit('room', room);
   });
+  socket.on('colour', (data) => {
+    mouse.colour = mouse.colours[data % mouse.colours.length];
+  });
   socket.on('draw_line', (data) => {
-    canvas.draw(data.line);
+    canvas.draw(data);
   });
 
   canvas.registerDrawEventListeners(mouse);
@@ -22,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       socket.emit('draw_line', {
         room: room,
         tool: mouse.selectedTool,
+        colour: mouse.colour,
         line: [mouse.pos, mouse.previousPos]
       });
       mouse.move = false;

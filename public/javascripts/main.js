@@ -1354,11 +1354,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _createClass(Canvas, [{
           key: "draw",
-          value: function draw(line) {
+          value: function draw(data) {
             this.context.beginPath();
-            this.context.moveTo(line[0].x * this.element.width, line[0].y * this.element.height);
-            this.context.lineTo(line[1].x * this.element.width, line[1].y * this.element.height);
-            this.context.strokeStyle = "#ffffff";
+            this.context.moveTo(data.line[0].x * this.element.width, data.line[0].y * this.element.height);
+            this.context.lineTo(data.line[1].x * this.element.width, data.line[1].y * this.element.height);
+            this.context.strokeStyle = data.colour;
             this.context.stroke();
           }
         }, {
@@ -1406,8 +1406,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         socket.on('connect', function () {
           socket.emit('room', room);
         });
+        socket.on('colour', function (data) {
+          mouse.colour = mouse.colours[data % mouse.colours.length];
+        });
         socket.on('draw_line', function (data) {
-          canvas.draw(data.line);
+          canvas.draw(data);
         });
 
         canvas.registerDrawEventListeners(mouse);
@@ -1418,6 +1421,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             socket.emit('draw_line', {
               room: room,
               tool: mouse.selectedTool,
+              colour: mouse.colour,
               line: [mouse.pos, mouse.previousPos]
             });
             mouse.move = false;
@@ -1432,7 +1436,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_37df8892.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_5b00d88b.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
@@ -1443,6 +1447,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             PEN: 'PEN',
             DISTANCE: 'DISTANCE'
           };
+          this.colours = ['#f4d03f', '#58d68d', '#3498db', '#e74c3c', '#ecf0f1']; // This class is getting beefy.  TODO: break out into Mouse, Colour, and Tool
+          this.colour = undefined; // To bet set on connection.
           this.selectedTool = this.tools.PEN;
           this.click = false;
           this.move = false;
@@ -1477,6 +1483,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
           key: "shouldDraw",
           value: function shouldDraw() {
+            // It's at this point that I regretted not using TypeScript
             return this.click && this.move && this.previousPos && this.selectedTool;
           }
         }, {

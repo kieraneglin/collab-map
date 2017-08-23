@@ -4,6 +4,8 @@ class Mouse {
       PEN: 'PEN',
       DISTANCE: 'DISTANCE'
     };
+    this.colours = ['#f4d03f', '#58d68d', '#3498db', '#e74c3c', '#ecf0f1']; // This class is getting beefy.  TODO: break out into Mouse, Colour, and Tool
+    this.colour = undefined; // To bet set on connection.
     this.selectedTool = this.tools.PEN;
     this.click = false;
     this.move = false;
@@ -28,7 +30,7 @@ class Mouse {
     this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height;
     this.move = true;
   }
-  shouldDraw() {
+  shouldDraw() { // It's at this point that I regretted not using TypeScript
     return this.click && this.move && this.previousPos && this.selectedTool;
   }
   changeTool(newTool) {
