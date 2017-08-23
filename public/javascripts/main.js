@@ -1345,7 +1345,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this.element = document.getElementById('map');
           this.context = this.element.getContext('2d');
-
+          this.toolPalette = document.querySelectorAll('.tool');
           // Check which edge is smaller, then set both edges to that size.  This makes it square and fit in screen
           var size = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
           this.element.width = size;
@@ -1362,8 +1362,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.context.stroke();
           }
         }, {
-          key: "registerEventListeners",
-          value: function registerEventListeners(mouse) {
+          key: "registerDrawEventListeners",
+          value: function registerDrawEventListeners(mouse) {
             var _this = this;
 
             this.element.onmousedown = function () {
@@ -1375,6 +1375,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.element.onmousemove = function (e) {
               mouse.drag(e, _this);
             };
+          }
+        }, {
+          key: "registerToolEventListeners",
+          value: function registerToolEventListeners(mouse) {
+            this.toolPalette.forEach(function (tool) {
+              tool.onclick = function (e) {
+                mouse.changeTool(e.target.dataset.tool);
+              };
+            });
           }
         }]);
 
@@ -1393,12 +1402,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var socket = io.connect();
         var mouse = new Mouse();
         var canvas = new Canvas();
-        var pen = document.getElementById('pen');
-
-        var usePen = true;
-        pen.addEventListener('click', function () {
-          return usePen = !usePen;
-        });
 
         socket.on('connect', function () {
           socket.emit('room', room);
@@ -1407,12 +1410,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           canvas.draw(data.line);
         });
 
-        canvas.registerEventListeners(mouse);
+        canvas.registerDrawEventListeners(mouse);
+        canvas.registerToolEventListeners(mouse);
 
         var emitLines = function emitLines() {
-          if (mouse.click && mouse.move && mouse.previousPos && usePen) {
+          if (mouse.shouldDraw()) {
             socket.emit('draw_line', {
               room: room,
+              tool: mouse.selectedTool,
               line: [mouse.pos, mouse.previousPos]
             });
             mouse.move = false;
@@ -1427,13 +1432,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_b8112b13.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_37df8892.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
         function Mouse() {
           _classCallCheck(this, Mouse);
 
+          this.tools = { // Since we don't have enums...
+            PEN: 'PEN',
+            DISTANCE: 'DISTANCE'
+          };
+          this.selectedTool = this.tools.PEN;
           this.click = false;
           this.move = false;
           this.pos = {
@@ -1463,6 +1473,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.pos.x = (e.pageX - e.target.offsetLeft) / canvas.element.width;
             this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height;
             this.move = true;
+          }
+        }, {
+          key: "shouldDraw",
+          value: function shouldDraw() {
+            return this.click && this.move && this.previousPos && this.selectedTool;
+          }
+        }, {
+          key: "changeTool",
+          value: function changeTool(newTool) {
+            this.selectedTool = newTool == this.selectedTool ? undefined : newTool;
           }
         }]);
 

@@ -2,7 +2,7 @@ class Canvas {
   constructor() {
     this.element = document.getElementById('map');
     this.context = this.element.getContext('2d');
-
+    this.toolPalette = document.querySelectorAll('.tool');
     // Check which edge is smaller, then set both edges to that size.  This makes it square and fit in screen
     let size = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
     this.element.width = size;
@@ -15,7 +15,7 @@ class Canvas {
     this.context.strokeStyle = "#ffffff";
     this.context.stroke();
   }
-  registerEventListeners(mouse) {
+  registerDrawEventListeners(mouse) {
     this.element.onmousedown = () => {
       mouse.down();
     };
@@ -25,6 +25,13 @@ class Canvas {
     this.element.onmousemove = (e) => {
       mouse.drag(e, this);
     };
+  }
+  registerToolEventListeners(mouse) {
+    this.toolPalette.forEach((tool) => {
+      tool.onclick = (e) => {
+        mouse.changeTool(e.target.dataset.tool);
+      };
+    });
   }
 }
 
