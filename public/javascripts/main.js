@@ -1421,7 +1421,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_1ac65880.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_af216f19.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
@@ -1454,8 +1454,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           key: "drag",
           value: function drag(e, canvas) {
             // normalize mouse position to range 0.0 - 1.0
-            this.pos.x = (e.clientX - e.target.offsetLeft) / canvas.element.width;
-            this.pos.y = (e.clientY - e.target.offsetTop) / canvas.element.height;
+            // console.log(e);
+            this.pos.x = (e.pageX - e.target.offsetLeft) / canvas.element.width;
+            this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height;
             this.move = true;
           }
         }]);
