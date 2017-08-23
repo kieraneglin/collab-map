@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mouse.colour = mouse.colours[data % mouse.colours.length];
   });
   socket.on('draw_line', (data) => {
+    canvas.instructions.push(data);
     canvas.draw(data);
   });
 

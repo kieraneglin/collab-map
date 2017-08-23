@@ -1343,29 +1343,49 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function Canvas() {
           _classCallCheck(this, Canvas);
 
+          // Check which edge is smaller, then set both edges to that size.  This makes it square and fit in screen
+          var size = Math.min(window.innerWidth, window.innerHeight);
+
           this.element = document.getElementById('map');
           this.context = this.element.getContext('2d');
+          this.image = new Image();
+          this.setBackground();
+          this.instructions = [];
           this.toolPalette = document.querySelectorAll('.tool');
-          // Check which edge is smaller, then set both edges to that size.  This makes it square and fit in screen
-          var size = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
           this.element.width = size;
           this.element.height = size;
+          this.scale = 1;
+          this.zoom = {
+            increase: 2,
+            decrease: 0.5
+          };
+          this.transformHistory = [];
         }
 
         _createClass(Canvas, [{
+          key: "setBackground",
+          value: function setBackground() {
+            var _this = this;
+
+            this.image.onload = function () {
+              _this.context.drawImage(_this.image, 0, 0, _this.element.width, _this.element.height);
+            };
+            this.image.src = '/images/map.jpg';
+          }
+        }, {
           key: "draw",
           value: function draw(data) {
             this.context.beginPath();
             this.context.moveTo(data.line[0].x * this.element.width, data.line[0].y * this.element.height);
             this.context.lineTo(data.line[1].x * this.element.width, data.line[1].y * this.element.height);
-            this.context.lineWidth = 2;
+            this.context.lineWidth = 2 / this.scale;
             this.context.strokeStyle = data.colour;
             this.context.stroke();
           }
         }, {
           key: "registerDrawEventListeners",
           value: function registerDrawEventListeners(mouse) {
-            var _this = this;
+            var _this2 = this;
 
             this.element.onmousedown = function () {
               mouse.down();
@@ -1374,7 +1394,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               mouse.up();
             };
             this.element.onmousemove = function (e) {
-              mouse.drag(e, _this);
+              mouse.drag(e, _this2);
+            };
+            this.element.onwheel = function (e) {
+              var zoom = void 0;
+              var transform = void 0;
+
+              if (e.deltaY <= 0) {
+                zoom = _this2.zoom.increase;
+                _this2.scale++;
+
+                transform = {
+                  x: e.pageX - e.target.offsetLeft,
+                  y: e.pageY - e.target.offsetTop
+                };
+
+                _this2.transformHistory.push(transform);
+              } else if (e.deltaY >= 0 && _this2.scale > 1) {
+                zoom = _this2.zoom.decrease;
+                _this2.scale--;
+
+                transform = _this2.transformHistory.pop();
+              } else {
+                return;
+              }
+
+              _this2.context.translate(transform.x, transform.y);
+              _this2.context.scale(zoom, zoom); // Sponsored by Mazda
+              _this2.context.translate(-transform.x, -transform.y);
+
+              _this2.context.drawImage(_this2.image, 0, 0, _this2.element.width, _this2.element.height);
+
+              _this2.instructions.forEach(function (instruction) {
+                _this2.draw(instruction);
+              });
             };
           }
         }, {
@@ -1411,6 +1464,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           mouse.colour = mouse.colours[data % mouse.colours.length];
         });
         socket.on('draw_line', function (data) {
+          canvas.instructions.push(data);
           canvas.draw(data);
         });
 
@@ -1437,7 +1491,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_9f65f274.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_82d50c7b.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
@@ -1477,8 +1531,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           key: "drag",
           value: function drag(e, canvas) {
             // normalize mouse position to range 0.0 - 1.0
-            this.pos.x = (e.pageX - e.target.offsetLeft) / canvas.element.width;
-            this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height;
+            this.pos.x = (e.pageX - e.target.offsetLeft) / canvas.element.width * Math.pow(0.5, canvas.scale - 1); // Sets the scaling for any zoom level
+            this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height * Math.pow(0.5, canvas.scale - 1); // Just trust
             this.move = true;
           }
         }, {
