@@ -65,6 +65,7 @@ class Canvas {
         return;
       }
 
+      console.log(transform);
       this.context.translate(transform.x, transform.y);
       this.context.scale(zoom, zoom); // Sponsored by Mazda
       this.context.translate(-transform.x, -transform.y);

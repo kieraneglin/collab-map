@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('draw_line', (data) => {
     canvas.instructions.push(data);
     canvas.draw(data);
+    console.log(data.line);
   });
 
   canvas.registerDrawEventListeners(mouse);

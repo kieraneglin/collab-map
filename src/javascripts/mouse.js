@@ -28,6 +28,7 @@ class Mouse {
     // normalize mouse position to range 0.0 - 1.0
     this.pos.x = ((e.pageX - e.target.offsetLeft) / canvas.element.width) * Math.pow(0.5, canvas.scale - 1); // Sets the scaling for any zoom level
     this.pos.y = ((e.pageY - e.target.offsetTop) / canvas.element.height) * Math.pow(0.5, canvas.scale - 1); // Just trust
+    console.log(this.pos);
     this.move = true;
   }
   shouldDraw() { // It's at this point that I regretted not using TypeScript
