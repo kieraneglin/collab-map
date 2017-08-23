@@ -1393,6 +1393,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var socket = io.connect();
         var mouse = new Mouse();
         var canvas = new Canvas();
+        var pen = document.getElementById('pen');
+
+        var usePen = true;
+        pen.addEventListener('click', function () {
+          return usePen = !usePen;
+        });
 
         socket.on('connect', function () {
           socket.emit('room', room);
@@ -1404,7 +1410,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         canvas.registerEventListeners(mouse);
 
         var emitLines = function emitLines() {
-          if (mouse.click && mouse.move && mouse.previousPos) {
+          if (mouse.click && mouse.move && mouse.previousPos && usePen) {
             socket.emit('draw_line', {
               room: room,
               line: [mouse.pos, mouse.previousPos]
@@ -1421,7 +1427,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_af216f19.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_b8112b13.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
@@ -1454,7 +1460,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           key: "drag",
           value: function drag(e, canvas) {
             // normalize mouse position to range 0.0 - 1.0
-            // console.log(e);
             this.pos.x = (e.pageX - e.target.offsetLeft) / canvas.element.width;
             this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height;
             this.move = true;

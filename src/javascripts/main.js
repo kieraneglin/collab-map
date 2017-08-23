@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const socket = io.connect();
   const mouse = new Mouse();
   const canvas = new Canvas();
+  const pen = document.getElementById('pen');
+
+  let usePen = true;
+  pen.addEventListener('click', () => usePen = !usePen);
 
   socket.on('connect', () => {
     socket.emit('room', room);
@@ -17,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.registerEventListeners(mouse);
 
   const emitLines = () => {
-    if (mouse.click && mouse.move && mouse.previousPos) {
+    if (mouse.click && mouse.move && mouse.previousPos && usePen) {
       socket.emit('draw_line', {
         room: room,
         line: [mouse.pos, mouse.previousPos]
