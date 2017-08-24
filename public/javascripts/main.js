@@ -1370,7 +1370,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.image.onload = function () {
               _this.context.drawImage(_this.image, 0, 0, _this.element.width, _this.element.height);
             };
-            this.image.src = '/images/map.jpg';
+            this.image.src = '/images/map.png';
           }
         }, {
           key: "draw",
@@ -1419,7 +1419,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return;
               }
 
-              console.log(transform);
               _this2.context.translate(transform.x, transform.y);
               _this2.context.scale(zoom, zoom); // Sponsored by Mazda
               _this2.context.translate(-transform.x, -transform.y);
@@ -1467,7 +1466,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         socket.on('draw_line', function (data) {
           canvas.instructions.push(data);
           canvas.draw(data);
-          console.log(data.line);
         });
 
         canvas.registerDrawEventListeners(mouse);
@@ -1493,7 +1491,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_154185f8.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_dda6370c.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
@@ -1505,7 +1503,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             DISTANCE: 'DISTANCE'
           };
           this.colours = ['#f4d03f', '#58d68d', '#3498db', '#e74c3c', '#ecf0f1']; // This class is getting beefy.  TODO: break out into Mouse, Colour, and Tool
-          this.colour = undefined; // To bet set on connection.
+          this.colour = undefined; // To be set on connection.
           this.selectedTool = this.tools.PEN;
           this.click = false;
           this.move = false;
@@ -1535,7 +1533,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             // normalize mouse position to range 0.0 - 1.0
             this.pos.x = (e.pageX - e.target.offsetLeft) / canvas.element.width * Math.pow(0.5, canvas.scale - 1); // Sets the scaling for any zoom level
             this.pos.y = (e.pageY - e.target.offsetTop) / canvas.element.height * Math.pow(0.5, canvas.scale - 1); // Just trust
-            console.log(this.pos);
             this.move = true;
           }
         }, {

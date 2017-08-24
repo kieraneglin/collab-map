@@ -22,7 +22,7 @@ class Canvas {
     this.image.onload = () => {
       this.context.drawImage(this.image, 0, 0, this.element.width, this.element.height);
     };
-    this.image.src = '/images/map.jpg';
+    this.image.src = '/images/map.png';
   }
   draw(data) {
     this.context.beginPath();
@@ -46,17 +46,17 @@ class Canvas {
       let zoom;
       let transform;
 
-      if(e.deltaY <= 0) {
+      if (e.deltaY <= 0) {
         zoom = this.zoom.increase;
         this.scale++;
 
-        transform =  {
+        transform = {
           x: e.pageX - e.target.offsetLeft,
           y: e.pageY - e.target.offsetTop
         };
 
         this.transformHistory.push(transform);
-      } else if(e.deltaY >= 0 && this.scale > 1) {
+      } else if (e.deltaY >= 0 && this.scale > 1) {
         zoom = this.zoom.decrease;
         this.scale--;
 
@@ -65,7 +65,6 @@ class Canvas {
         return;
       }
 
-      console.log(transform);
       this.context.translate(transform.x, transform.y);
       this.context.scale(zoom, zoom); // Sponsored by Mazda
       this.context.translate(-transform.x, -transform.y);

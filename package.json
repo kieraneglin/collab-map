@@ -1,7 +1,7 @@
 {
-  "name": "pubg",
+  "name": "collab map",
   "version": "0.0.1",
-  "description": "A quick-and-dirty reference for PUBG",
+  "description": "A quick-and-dirty map app",
   "main": "index.js",
   "author": "Kieran Eglin",
   "license": "MIT",

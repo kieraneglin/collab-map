@@ -5,7 +5,7 @@ class Mouse {
       DISTANCE: 'DISTANCE'
     };
     this.colours = ['#f4d03f', '#58d68d', '#3498db', '#e74c3c', '#ecf0f1']; // This class is getting beefy.  TODO: break out into Mouse, Colour, and Tool
-    this.colour = undefined; // To bet set on connection.
+    this.colour = undefined; // To be set on connection.
     this.selectedTool = this.tools.PEN;
     this.click = false;
     this.move = false;
@@ -28,7 +28,6 @@ class Mouse {
     // normalize mouse position to range 0.0 - 1.0
     this.pos.x = ((e.pageX - e.target.offsetLeft) / canvas.element.width) * Math.pow(0.5, canvas.scale - 1); // Sets the scaling for any zoom level
     this.pos.y = ((e.pageY - e.target.offsetTop) / canvas.element.height) * Math.pow(0.5, canvas.scale - 1); // Just trust
-    console.log(this.pos);
     this.move = true;
   }
   shouldDraw() { // It's at this point that I regretted not using TypeScript
