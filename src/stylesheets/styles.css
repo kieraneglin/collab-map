@@ -10,7 +10,8 @@ body, html {
 
 .tools {
   position: absolute;
-  left: 1000px;
+  z-index: 1;
+  /*left: 1000px;*/
 }
 
 #map {

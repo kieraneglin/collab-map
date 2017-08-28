@@ -10,7 +10,10 @@ io.sockets.on('connection', (socket) => {
   socket.on('room', (room) => {
     connections[room] = (connections[room] || 0) + 1;
     socket.join(room);
-    socket.emit('colour', connections[room]); // To assign a colour to each new person
+    socket.emit('identification', {
+      colour: connections[room],
+      id: socket.id
+    });
   });
 
   socket.on('draw_line', (data) => {

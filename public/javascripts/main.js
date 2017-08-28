@@ -1461,7 +1461,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
 
         var canvas = new fabric.Canvas('map', {
-          isDrawingMode: true
+          isDrawingMode: true,
+          selection: false
         });
 
         var size = Math.min(window.innerWidth, window.innerHeight);
@@ -1471,8 +1472,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         canvas.freeDrawingBrush.color = "purple";
         canvas.freeDrawingBrush.width = 2;
 
-        socket.on('colour', function (data) {
-          canvas.freeDrawingBrush.color = colours[data % colours.length];
+        socket.on('identification', function (data) {
+          canvas.freeDrawingBrush.color = colours[data.colour % colours.length];
+          canvas.id = data.id;
         });
 
         var img = new Image();
@@ -1484,23 +1486,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         };
         img.src = "/images/map.jpg";
 
-        canvas.wrapperEl.addEventListener('wheel', function (e) {
-          if (e.deltaY <= 0) {
+        canvas.on('mouse:wheel', function (e) {
+          if (e.e.deltaY <= 0) {
             canvas.zoomToPoint({
-              x: e.offsetX,
-              y: e.offsetY
+              x: e.e.offsetX,
+              y: e.e.offsetY
             }, canvas.getZoom() * 1.1);
           } else {
             canvas.zoomToPoint({
-              x: e.offsetX,
-              y: e.offsetY
+              x: e.e.offsetX,
+              y: e.e.offsetY
             }, canvas.getZoom() * 0.9);
           }
-          // console.log(canvas.getZoom());
+
           canvas.freeDrawingBrush.width = 2 / canvas.getZoom();
           canvas.getObjects().map(function (line) {
             line.strokeWidth = 2 / canvas.getZoom();
           });
+        });
+
+        document.querySelector('.clear').addEventListener('click', function () {
+          // let lines = Array.assign([], canvas.getObjects());
+
+          var objects = canvas.getObjects().filter(function (line) {
+            return line.senderId === canvas.id;
+          });
+
+          // console.log(objects);
+
+          while (objects.length != 0) {
+            canvas.remove(objects[0]);
+          }
+
+          // for (var i = 0; i < objects.length; i++) {
+          //   canvas.remove(objects[i]);
+          // }
         });
 
         canvas.on('path:created', function (e) {
@@ -1508,23 +1528,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           socket.emit('draw_line', {
             line: e.path.toJSON(),
             room: room,
-            size: size
+            size: size,
+            sender: canvas.id
           });
         });
 
         socket.on('draw_line', function (path) {
+          // console.log(path.line);
           var scale = canvas.width / path.size;
-          // path.scaleX = 2;
-          // path.scaleY = 2;
-          console.log(size / path.size);
           path.line.left *= scale;
           path.line.top *= scale;
           path.line.scaleX *= scale;
           path.line.scaleY *= scale;
           path.line.strokeWidth = 2 / canvas.getZoom();
-          console.log(path.line);
+
           fabric.util.enlivenObjects([path.line], function (objects) {
             objects.forEach(function (o) {
+              o.senderId = path.sender;
               canvas.add(o);
             });
           });
@@ -1532,12 +1552,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         function resetZoom() {
           canvas.setZoom(1);
+          canvas.zoomToPoint(0, 0);
           canvas.renderAll();
         }
 
         canvas.on("after:render", function () {
           canvas.calcOffset();
         });
+
+        document.body.onkeydown = function (e) {
+          if (e.shiftKey) {
+            canvas.isDrawingMode = false;
+          }
+        };
+        document.body.onkeyup = function (e) {
+          canvas.isDrawingMode = true;
+        };
 
         var panning = false;
         canvas.on('mouse:up', function (e) {
@@ -1550,55 +1580,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           panning = true;
         });
         canvas.on('mouse:move', function (e) {
-          //allowing pan only if the image is zoomed.
-          if (panning && e && e.e && e.e.shiftKey) {
+          if (panning && e.e && e.e.shiftKey) {
+            // testerino = true;
             var delta = new fabric.Point(e.e.movementX, e.e.movementY);
             canvas.relativePan(delta);
           }
         });
-        // canvas.backgroundImage.width = canvas.getWidth();
-        // canvas.backgroundImage.height = canvas.getHeight();
-
-        // const room = window.location.href.split('/').pop(); // This is cheeky and gross and I hate myself for it
-        // const socket = io.connect();
-        // const mouse = new Mouse();
-        // const canvas = new Canvas();
-        //
-        // socket.on('connect', () => {
-        //   socket.emit('room', room);
-        // });
-        // socket.on('colour', (data) => {
-        //   mouse.colour = mouse.colours[data % mouse.colours.length];
-        // });
-        // socket.on('draw_line', (data) => {
-        //   canvas.instructions.push(data);
-        //   canvas.draw(data);
-        // });
-        //
-        // canvas.registerDrawEventListeners(mouse);
-        // canvas.registerToolEventListeners(mouse);
-        //
-        // const emitLines = () => {
-        //   if (mouse.shouldDraw()) {
-        //     socket.emit('draw_line', {
-        //       room: room,
-        //       tool: mouse.selectedTool,
-        //       colour: mouse.colour,
-        //       line: [mouse.pos, mouse.previousPos]
-        //     });
-        //     mouse.move = false;
-        //   }
-        //   mouse.previousPos = {
-        //     x: mouse.pos.x,
-        //     y: mouse.pos.y
-        //   };
-        //
-        //   setTimeout(emitLines, 25); // I should be using requestAnimationFrame, but this is simple enough
-        // };
-        //
-        // emitLines();
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_7d28649c.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_6bfac4af.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {

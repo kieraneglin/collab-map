@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   var canvas = new fabric.Canvas('map', {
-    isDrawingMode: true
+    isDrawingMode: true,
+    selection: false
   });
 
   let size = Math.min(window.innerWidth, window.innerHeight);
@@ -21,8 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.freeDrawingBrush.color = "purple";
   canvas.freeDrawingBrush.width = 2;
 
-  socket.on('colour', (data) => {
-    canvas.freeDrawingBrush.color = colours[data % colours.length];
+  socket.on('identification', (data) => {
+    canvas.freeDrawingBrush.color = colours[data.colour % colours.length];
+    canvas.id = data.id;
   });
 
   var img = new Image();
@@ -34,23 +36,39 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   img.src = "/images/map.jpg";
 
-  canvas.wrapperEl.addEventListener('wheel', (e) => {
-    if (e.deltaY <= 0) {
+  canvas.on('mouse:wheel', (e) => {
+    if (e.e.deltaY <= 0) {
       canvas.zoomToPoint({
-        x: e.offsetX,
-        y: e.offsetY
+        x: e.e.offsetX,
+        y: e.e.offsetY
       }, canvas.getZoom() * 1.1);
     } else {
       canvas.zoomToPoint({
-        x: e.offsetX,
-        y: e.offsetY
+        x: e.e.offsetX,
+        y: e.e.offsetY
       }, canvas.getZoom() * 0.9);
     }
-    // console.log(canvas.getZoom());
+
     canvas.freeDrawingBrush.width = 2 / canvas.getZoom();
     canvas.getObjects().map((line) => {
       line.strokeWidth = 2 / canvas.getZoom();
     });
+  });
+
+  document.querySelector('.clear').addEventListener('click', () => {
+    // let lines = Array.assign([], canvas.getObjects());
+
+    var objects = canvas.getObjects().filter((line) => line.senderId === canvas.id);
+
+    // console.log(objects);
+
+    while (objects.length != 0) {
+      canvas.remove(objects[0]);
+    }
+
+    // for (var i = 0; i < objects.length; i++) {
+    //   canvas.remove(objects[i]);
+    // }
   });
 
   canvas.on('path:created', function (e) {
@@ -58,23 +76,23 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('draw_line', {
       line: e.path.toJSON(),
       room: room,
-      size: size
+      size: size,
+      sender: canvas.id
     });
   });
 
   socket.on('draw_line', function (path) {
+    // console.log(path.line);
     let scale = canvas.width / path.size;
-    // path.scaleX = 2;
-    // path.scaleY = 2;
-    console.log(size / path.size);
     path.line.left *= scale;
     path.line.top *= scale;
     path.line.scaleX *= scale;
     path.line.scaleY *= scale;
     path.line.strokeWidth = 2 / canvas.getZoom();
-    console.log(path.line);
+
     fabric.util.enlivenObjects([path.line], function (objects) {
       objects.forEach(function (o) {
+        o.senderId = path.sender;
         canvas.add(o);
       });
     });
@@ -82,11 +100,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetZoom() {
     canvas.setZoom(1);
+    canvas.zoomToPoint(0, 0);
     canvas.renderAll();
   }
 
-  canvas.on("after:render", function(){canvas.calcOffset();});
+  canvas.on("after:render", function () {
+    canvas.calcOffset();
+  });
 
+  document.body.onkeydown = (e) => {
+    if (e.shiftKey) {
+      canvas.isDrawingMode = false;
+    }
+  };
+  document.body.onkeyup = (e) => {
+    canvas.isDrawingMode = true;
+  };
 
   var panning = false;
   canvas.on('mouse:up', function (e) {
@@ -99,51 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
     panning = true;
   });
   canvas.on('mouse:move', function (e) {
-    //allowing pan only if the image is zoomed.
-    if (panning && e && e.e && e.e.shiftKey) {
+    if (panning && e.e && e.e.shiftKey) {
+      // testerino = true;
       var delta = new fabric.Point(e.e.movementX, e.e.movementY);
       canvas.relativePan(delta);
     }
   });
-  // canvas.backgroundImage.width = canvas.getWidth();
-  // canvas.backgroundImage.height = canvas.getHeight();
-
-  // const room = window.location.href.split('/').pop(); // This is cheeky and gross and I hate myself for it
-  // const socket = io.connect();
-  // const mouse = new Mouse();
-  // const canvas = new Canvas();
-  //
-  // socket.on('connect', () => {
-  //   socket.emit('room', room);
-  // });
-  // socket.on('colour', (data) => {
-  //   mouse.colour = mouse.colours[data % mouse.colours.length];
-  // });
-  // socket.on('draw_line', (data) => {
-  //   canvas.instructions.push(data);
-  //   canvas.draw(data);
-  // });
-  //
-  // canvas.registerDrawEventListeners(mouse);
-  // canvas.registerToolEventListeners(mouse);
-  //
-  // const emitLines = () => {
-  //   if (mouse.shouldDraw()) {
-  //     socket.emit('draw_line', {
-  //       room: room,
-  //       tool: mouse.selectedTool,
-  //       colour: mouse.colour,
-  //       line: [mouse.pos, mouse.previousPos]
-  //     });
-  //     mouse.move = false;
-  //   }
-  //   mouse.previousPos = {
-  //     x: mouse.pos.x,
-  //     y: mouse.pos.y
-  //   };
-  //
-  //   setTimeout(emitLines, 25); // I should be using requestAnimationFrame, but this is simple enough
-  // };
-  //
-  // emitLines();
 });
