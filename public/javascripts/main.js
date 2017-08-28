@@ -1477,6 +1477,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           canvas.id = data.id;
         });
 
+        socket.on('clear', function (data) {
+          removeLines(data.client);
+        });
+
         var img = new Image();
         img.onload = function () {
           canvas.setBackgroundImage(img.src, canvas.renderAll.bind(canvas), {
@@ -1505,22 +1509,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         });
 
-        document.querySelector('.clear').addEventListener('click', function () {
-          // let lines = Array.assign([], canvas.getObjects());
-
+        function removeLines(client) {
           var objects = canvas.getObjects().filter(function (line) {
-            return line.senderId === canvas.id;
+            return line.senderId === client;
           });
 
-          // console.log(objects);
+          objects.forEach(function (object) {
+            canvas.remove(object);
+          });
+        }
 
-          while (objects.length != 0) {
-            canvas.remove(objects[0]);
-          }
-
-          // for (var i = 0; i < objects.length; i++) {
-          //   canvas.remove(objects[i]);
-          // }
+        document.querySelector('.clear').addEventListener('click', function () {
+          socket.emit('clear', { client: canvas.id, room: room });
         });
 
         canvas.on('path:created', function (e) {
@@ -1587,7 +1587,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         });
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_6bfac4af.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_9aa2658e.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {

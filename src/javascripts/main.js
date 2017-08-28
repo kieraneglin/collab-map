@@ -27,6 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.id = data.id;
   });
 
+  socket.on('clear', (data) => {
+    removeLines(data.client);
+  });
+
+
+
   var img = new Image();
   img.onload = function () {
     canvas.setBackgroundImage(img.src, canvas.renderAll.bind(canvas), {
@@ -55,20 +61,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  function removeLines(client) {
+    var objects = canvas.getObjects().filter((line) => line.senderId === client);
+
+    objects.forEach((object) => {
+      canvas.remove(object);
+    });
+  }
+
   document.querySelector('.clear').addEventListener('click', () => {
-    // let lines = Array.assign([], canvas.getObjects());
-
-    var objects = canvas.getObjects().filter((line) => line.senderId === canvas.id);
-
-    // console.log(objects);
-
-    while (objects.length != 0) {
-      canvas.remove(objects[0]);
-    }
-
-    // for (var i = 0; i < objects.length; i++) {
-    //   canvas.remove(objects[i]);
-    // }
+    socket.emit('clear', { client: canvas.id, room: room});
   });
 
   canvas.on('path:created', function (e) {

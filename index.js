@@ -19,6 +19,10 @@ io.sockets.on('connection', (socket) => {
   socket.on('draw_line', (data) => {
     io.sockets.in(data.room).emit('draw_line', data);
   });
+
+  socket.on('clear', (data) => {
+    io.sockets.in(data.room).emit('clear', data);
+  });
 });
 
 app.get('/:id', (req, res) => {
