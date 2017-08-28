@@ -22,4 +22,4 @@ app.get('/:id', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-server.listen(3000);
+server.listen(process.env.PORT || 3000);

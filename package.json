@@ -1,10 +1,17 @@
 {
-  "name": "collab map",
+  "name": "collabmap",
   "version": "0.0.1",
+  "engines": {
+    "node": "8.2.x",
+    "npm": "5.3.x"
+  },
   "description": "A quick-and-dirty map app",
   "main": "index.js",
   "author": "Kieran Eglin",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "dotenv": "^4.0.0",
     "express": "^4.15.4",
