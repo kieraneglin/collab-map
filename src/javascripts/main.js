@@ -31,8 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     removeLines(data.client);
   });
 
-
-
   var img = new Image();
   img.onload = function () {
     canvas.setBackgroundImage(img.src, canvas.renderAll.bind(canvas), {
@@ -74,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   canvas.on('path:created', function (e) {
-    canvas.remove(e.path);
+    e.path.senderId = canvas.id;
+
     socket.emit('draw_line', {
       line: e.path.toJSON(),
       room: room,
@@ -84,20 +83,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   socket.on('draw_line', function (path) {
-    // console.log(path.line);
-    let scale = canvas.width / path.size;
-    path.line.left *= scale;
-    path.line.top *= scale;
-    path.line.scaleX *= scale;
-    path.line.scaleY *= scale;
-    path.line.strokeWidth = 2 / canvas.getZoom();
+    if(path.sender !== canvas.id) {
+      let scale = canvas.width / path.size;
+      path.line.left *= scale;
+      path.line.top *= scale;
+      path.line.scaleX *= scale;
+      path.line.scaleY *= scale;
+      path.line.strokeWidth = 2 / canvas.getZoom();
 
-    fabric.util.enlivenObjects([path.line], function (objects) {
-      objects.forEach(function (o) {
-        o.senderId = path.sender;
-        canvas.add(o);
+      fabric.util.enlivenObjects([path.line], function (objects) {
+        objects.forEach(function (o) {
+          o.senderId = path.sender;
+          canvas.add(o);
+        });
       });
-    });
+    }
   });
 
   function resetZoom() {

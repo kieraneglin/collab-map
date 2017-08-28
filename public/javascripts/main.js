@@ -1524,7 +1524,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
 
         canvas.on('path:created', function (e) {
-          canvas.remove(e.path);
+          e.path.senderId = canvas.id;
+
           socket.emit('draw_line', {
             line: e.path.toJSON(),
             room: room,
@@ -1534,20 +1535,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
 
         socket.on('draw_line', function (path) {
-          // console.log(path.line);
-          var scale = canvas.width / path.size;
-          path.line.left *= scale;
-          path.line.top *= scale;
-          path.line.scaleX *= scale;
-          path.line.scaleY *= scale;
-          path.line.strokeWidth = 2 / canvas.getZoom();
+          if (path.sender !== canvas.id) {
+            var scale = canvas.width / path.size;
+            path.line.left *= scale;
+            path.line.top *= scale;
+            path.line.scaleX *= scale;
+            path.line.scaleY *= scale;
+            path.line.strokeWidth = 2 / canvas.getZoom();
 
-          fabric.util.enlivenObjects([path.line], function (objects) {
-            objects.forEach(function (o) {
-              o.senderId = path.sender;
-              canvas.add(o);
+            fabric.util.enlivenObjects([path.line], function (objects) {
+              objects.forEach(function (o) {
+                o.senderId = path.sender;
+                canvas.add(o);
+              });
             });
-          });
+          }
         });
 
         function resetZoom() {
@@ -1587,7 +1589,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         });
       });
-    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_9aa2658e.js", "/");
+    }).call(this, require("rH1JPG"), typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {}, require("buffer").Buffer, arguments[3], arguments[4], arguments[5], arguments[6], "/fake_56cab818.js", "/");
   }, { "./canvas": 5, "./mouse": 7, "buffer": 2, "rH1JPG": 4 }], 7: [function (require, module, exports) {
     (function (process, global, Buffer, __argument0, __argument1, __argument2, __argument3, __filename, __dirname) {
       var Mouse = function () {
