@@ -10,6 +10,7 @@ body, html {
 
 .tools {
   position: absolute;
+  left: 1000px;
 }
 
 #map {
