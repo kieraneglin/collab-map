@@ -10,7 +10,9 @@
   "author": "Kieran Eglin",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "watch": "gulp",
+    "compile": "gulp compile-tsc move-assets"
   },
   "dependencies": {
     "dotenv": "^4.0.0",
