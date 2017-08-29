@@ -1,6 +1,5 @@
 /* build: `node build.js modules=ALL exclude=json,gestures minifier=uglifyjs` */
  /*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
-
 var fabric = fabric || { version: "1.7.17" };
 if (typeof exports !== 'undefined') {
   exports.fabric = fabric;
@@ -27062,5 +27061,4 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
   if (fabric.Canvas) {
     fabric.Canvas.prototype._setBackstoreDimension = fabric.StaticCanvas.prototype._setBackstoreDimension;
   }
-
 })();

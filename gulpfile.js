@@ -20,7 +20,9 @@ gulp.task('compile-tsc', () => {
       cache: {},
       packageCache: {}
     })
-    .plugin(tsify)
+    .plugin(tsify, {
+      allowJs: true
+    })
     .bundle()
     .pipe(source('main.js'))
     .pipe(gulp.dest("public/javascripts"));
