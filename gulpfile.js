@@ -4,7 +4,7 @@ const source = require('vinyl-source-stream');
 const tsify = require("tsify");
 
 gulp.task('move-assets', () => {
-  gulp.src('./src/**/!(*.js|*.ts|*.map|*.src)')
+  gulp.src('./src/**/!(*.ts|*.map|*.src)')
     .pipe(gulp.dest('./public'));
 });
 
