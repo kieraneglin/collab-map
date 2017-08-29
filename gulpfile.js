@@ -1,23 +1,30 @@
 const gulp = require('gulp');
 const babel = require('gulp-babel');
-const browserify = require('gulp-browserify');
+const browserify = require('browserify');
+const source = require('vinyl-source-stream');
+const tsify = require("tsify");
 
-gulp.task('transpile', () => {
-  gulp.src('./src/javascripts/main.js')
-    .pipe(browserify({
-      insertGlobals: true
-    }))
-    .pipe(babel({
-      "presets": ["es2015"]
-    }))
-    .pipe(gulp.dest('./public/javascripts'));
-
-  gulp.src('./src/**/!(*.js|*.map|*.src)')
+gulp.task('move-assets', () => {
+  gulp.src('./src/**/!(*.js|*.ts|*.map|*.src)')
     .pipe(gulp.dest('./public'));
 });
 
 gulp.task('watch', () => {
-  gulp.watch('src/**/**.*', ['transpile']);
+  gulp.watch('src/**/**.*', ['compile-tsc', 'move-assets']);
 });
 
-gulp.task('default', ['transpile', 'watch']);
+gulp.task('compile-tsc', () => {
+  return browserify({
+      basedir: '.',
+      debug: true,
+      entries: ['./src/javascripts/main.ts'],
+      cache: {},
+      packageCache: {}
+    })
+    .plugin(tsify)
+    .bundle()
+    .pipe(source('main.js'))
+    .pipe(gulp.dest("public/javascripts"));
+});
+
+gulp.task('default', ['compile-tsc', 'move-assets', 'watch']);
