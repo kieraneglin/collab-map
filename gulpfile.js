@@ -21,7 +21,8 @@ gulp.task('compile-tsc', () => {
       packageCache: {}
     })
     .plugin(tsify, {
-      allowJs: true
+      allowJs: true,
+      target: 'es5'
     })
     .bundle()
     .pipe(source('main.js'))
