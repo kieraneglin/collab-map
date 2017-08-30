@@ -13,11 +13,11 @@ class Toolbar {
   }
 
   private registerEventListeners(): void {
-    (document.getElementById('clear') as HTMLInputElement).onclick = () => {
+    (document.getElementById('clear') as HTMLElement).onclick = (): void => {
       this.client.broadcastClear();
     };
 
-    (document.getElementById('reset-zoom') as HTMLInputElement).onclick = () => {
+    (document.getElementById('reset-zoom') as HTMLElement).onclick = (): void => {
       this.canvas.resetZoom();
     };
   }

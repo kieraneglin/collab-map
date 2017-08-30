@@ -3,6 +3,7 @@ declare let socket;
 class Client {
   public size: number;
   public room: string;
+  public name: string;
   public id: string;
   public colour: string;
   public socket: any; // Since TS doesn't play nice with non-node libs
@@ -37,7 +38,7 @@ class Client {
   }
 
   private get colourChoices(): Array<string> {
-    return ['#e74c3c', '#3498db', '#27ae60', '#f4d03f', '#ecf0f1']
+    return ['#e74c3c', '#3498db', '#27ae60', '#f4d03f', '#bf26e9', '#0bf7e7', '#f08080']
   }
 }
 

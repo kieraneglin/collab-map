@@ -6,9 +6,11 @@
 body, html {
   width: 100%;
   height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .pubg-map {
+  position: relative;
   margin: 0 auto;
   background-color: #0d2a37;
 }
@@ -16,4 +18,122 @@ body, html {
 .tools {
   position: absolute;
   z-index: 1;
+}
+
+.clients {
+  padding: 3px;
+  border-radius: 0 0 0 3px;
+  opacity: 0.2;
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  vertical-align: middle;
+}
+
+.clients:hover {
+  opacity: 0.65;
+}
+
+.clients > li {
+  line-height: 20px;
+  clear: both;
+}
+
+.clients-name {
+  float: left;
+  vertical-align: middle;
+  padding-right: 5px;
+}
+
+.clients-colour {
+  float: right;
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 3px;
+}
+
+.modal {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-body {
+  height: 150px;
+  width: 500px;
+  margin: 0 auto;
+  background-color: #495C70;
+  border-radius: 8px;
+  text-align: center;
+  padding: 1em;
+  border: 5px solid #53687E;
+}
+
+.modal-title {
+  display: block;
+  font-size: 1.6em;
+  color: white;
+}
+
+.modal-name {
+  text-align: center;
+  color: white;
+  font-size: 1.2em;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed #83A4C5;
+  width: 275px;
+  outline: none;
+  padding: 20px 0px 0px 0px;
+  font-style: italic;
+}
+
+.modal-name.error {
+  border-bottom: 1px dashed #e25050;
+  animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.modal-submit {
+  display: block;
+  font-size: 1.1em;
+  margin: 30px auto 0 auto;
+  background: #576E86;
+  border: none;
+  padding: 8px 10px 8px 10px;
+  border-radius: 5px;
+  color: #A8BACE;
+}
+
+.modal-submit:hover {
+  background: #394D61;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }

@@ -3,16 +3,26 @@
   <head>
     <title>Map Collab</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="stylesheets/reset.css" />
     <link rel="stylesheet" href="stylesheets/styles.css" />
     <script src="vendor/fabric.js"></script>
     <script src="socket.io/socket.io.js"></script>
   </head>
   <body>
+    <div class="modal">
+      <div class="modal-body">
+        <span class="modal-title">Enter Your Name</span>
+        <input type="text" class="modal-name" placeholder="Name">
+        <button class="modal-submit">Let's go</button>
+      </div>
+    </div>
     <div class="pubg-map">
       <div class="tools">
         <button id="clear">clear</button>
         <button id="reset-zoom">reset zoom</button>
       </div>
+      <ul class="clients">
+      </ul>
       <canvas id="map"></canvas>
     </div>
   </body>
