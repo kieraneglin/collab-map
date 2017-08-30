@@ -9,6 +9,8 @@ class Canvas { // TODO: Getting too beefy again.  Refactor
   public brushWidth: number = 2;
 
   private brushScaleFactor: number = 2;
+  private minZoom: number = 1;
+  private maxZoom: number = 15;
   private zoomInFactor: number = 1.1;
   private zoomOutFactor: number = 0.9;
 
@@ -74,10 +76,12 @@ class Canvas { // TODO: Getting too beefy again.  Refactor
 
   private registerEventListeners(): void {
     this.fabric.on('mouse:wheel', (e) => {
-      if (e.e.deltaY <= 0) {
+      if (e.e.deltaY <= 0 && this.fabric.getZoom() <= this.maxZoom) {
         this.zoomIn(e);
-      } else {
+      } else if(e.e.deltaY >= 0 && this.fabric.getZoom() > this.minZoom) {
         this.zoomOut(e)
+      } else {
+        return
       }
 
       this.applyScaledBrush();
