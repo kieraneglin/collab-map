@@ -12,7 +12,8 @@
   "scripts": {
     "start": "node index.js",
     "watch": "gulp",
-    "compile": "gulp compile-tsc move-assets"
+    "compile": "gulp compile-tsc move-assets",
+    "deploy": "npm run compile; npm start;"
   },
   "dependencies": {
     "express": "^4.15.4",
