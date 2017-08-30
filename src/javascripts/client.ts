@@ -24,6 +24,13 @@ class Client {
     });
   }
 
+  public broadcastClear(): void {
+    this.socket.emit('clear', {
+      client: this.id,
+      room: this.room
+    });
+  }
+
   public assignColour(connectionNumber: number): string {
     this.colour = this.colourChoices[connectionNumber % this.colourChoices.length];
     return this.colour;

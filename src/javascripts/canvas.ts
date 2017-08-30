@@ -22,20 +22,29 @@ class Canvas {
     this.scaleFabricToWindow();
     this.setBackgroundImage();
     this.registerEventListeners();
+    this.enablePanning();
   }
 
   public applyPath(data): void {
     if(data.sender !== this.client.id) {
       let path: any = Path.scaleIncoming(data, this.client.size);
-      path.strokeWidth = 2 / this.fabric.getZoom();
+      path.strokeWidth = this.scaledBrushSize;
 
       fabric.util.enlivenObjects([path], (objects) => {
-        objects.forEach((o) => {
-          o.senderId = data.sender;
-          this.fabric.add(o);
+        objects.forEach((object) => {
+          object.senderId = data.sender; // Since `enlivenObjects` strips all non-standard props
+          this.fabric.add(object);
         });
       });
     }
+  }
+
+  public applyClear(sender: string): void {
+    let objects = this.fabric.getObjects().filter((line) => line.senderId === sender);
+
+    objects.forEach((object) => {
+      this.fabric.remove(object);
+    });
   }
 
   private scaleFabricToWindow(): void {
@@ -64,12 +73,41 @@ class Canvas {
         this.zoomOut(e)
       }
 
-      this.scaleOwnBrushSize();
-      this.scaleOtherBrushSize();
+      this.applyScaledBrush();
+      this.applyScaledBrushToCanvas();
     });
 
     this.fabric.on('path:created', (e) => {
       this.client.broadcastPath(e);
+    });
+
+    document.body.onkeydown = (e) => {
+      if (e.shiftKey) {
+        this.fabric.isDrawingMode = false;
+      }
+    };
+
+    document.body.onkeyup = (e) => {
+      this.fabric.isDrawingMode = true;
+    };
+  }
+
+  private enablePanning(): void {
+    let panning = false;
+    this.fabric.on('mouse:up', (e) => {
+      panning = false;
+    });
+    this.fabric.on('mouse:out', (e) => {
+      panning = false;
+    });
+    this.fabric.on('mouse:down', (e) => {
+      panning = true;
+    });
+    this.fabric.on('mouse:move', (e) => {
+      if (panning && e.e && e.e.shiftKey) {
+        let delta = new fabric.Point(e.e.movementX, e.e.movementY);
+        this.fabric.relativePan(delta);
+      }
     });
   }
 
@@ -87,14 +125,18 @@ class Canvas {
     }, this.fabric.getZoom() * this.zoomOutFactor);
   }
 
-  private scaleOwnBrushSize(): void {
-    this.fabric.freeDrawingBrush.width = this.brushScaleFactor / this.fabric.getZoom();
+  private applyScaledBrush(): void { // Sets your brush size
+    this.fabric.freeDrawingBrush.width = this.scaledBrushSize;
   }
 
-  private scaleOtherBrushSize(): void {
-    this.fabric.getObjects().map((line) => {
-      line.strokeWidth = this.brushScaleFactor / this.fabric.getZoom();
+  private applyScaledBrushToCanvas(): void { // Sets brush size of existing paths
+    this.fabric.getObjects().map((path) => {
+      path.strokeWidth = this.applyScaledBrush();
     });
+  }
+
+  private get scaledBrushSize(): number {
+    return this.brushScaleFactor / this.fabric.getZoom();
   }
 
   private get canvasOptions(): object {
