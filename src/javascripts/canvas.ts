@@ -3,7 +3,7 @@ import Path from './path';
 
 declare let fabric;
 
-class Canvas {
+class Canvas { // TODO: Getting too beefy again.  Refactor
   public fabric: any;
   public size: number;
   public client: Client;
@@ -45,6 +45,12 @@ class Canvas {
     objects.forEach((object) => {
       this.fabric.remove(object);
     });
+  }
+
+  public resetZoom() {
+    this.fabric.setZoom(1);
+    this.fabric.zoomToPoint(0, 0);
+    this.fabric.renderAll();
   }
 
   private scaleFabricToWindow(): void {

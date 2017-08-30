@@ -8,7 +8,7 @@ declare let io;
 const socket = io.connect();
 const client = new Client(socket);
 const canvas = new Canvas(client);
-const toolbar = new Toolbar(client);
+const toolbar = new Toolbar(client, canvas);
 
 socket.on('connect', () => {
   socket.emit('room', client.room);
