@@ -5,7 +5,6 @@ declare let fabric;
 
 class Canvas { // TODO: Getting too beefy again.  Refactor
   public fabric: any;
-  public size: number;
   public client: Client;
   public brushWidth: number = 2;
 
@@ -56,6 +55,8 @@ class Canvas { // TODO: Getting too beefy again.  Refactor
   private scaleFabricToWindow(): void {
     this.fabric.setHeight(this.client.size);
     this.fabric.setWidth(this.client.size);
+
+    (document.querySelector('.pubg-map') as HTMLElement).style.width = `${this.client.size}px`; // This is gross and there's probably a CSS way to do this, but I hate CSS so here we are
   }
 
   private setBackgroundImage(): void {
