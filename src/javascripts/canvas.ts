@@ -1,17 +1,22 @@
+import Client from './client';
+import Path from './path';
+
 declare let fabric;
 
 class Canvas {
   public fabric: any;
   public size: number;
+  public client: Client;
   public brushWidth: number = 2;
 
   private brushScaleFactor: number = 2;
   private zoomInFactor: number = 1.1;
   private zoomOutFactor: number = 0.9;
 
-  constructor() {
+  constructor(client) {
+    this.client = client;
+
     this.fabric = new fabric.Canvas('map', this.canvasOptions);
-    this.size = Math.min(window.innerWidth, window.innerHeight); // So canvas won't exceed the browser height
     this.fabric.freeDrawingBrush.width = this.brushWidth;
 
     this.scaleFabricToWindow();
@@ -19,9 +24,23 @@ class Canvas {
     this.registerEventListeners();
   }
 
+  public applyPath(data): void {
+    if(data.sender !== this.client.id) {
+      let path: any = Path.scaleIncoming(data, this.client.size);
+      path.strokeWidth = 2 / this.fabric.getZoom();
+
+      fabric.util.enlivenObjects([path], (objects) => {
+        objects.forEach((o) => {
+          o.senderId = data.sender;
+          this.fabric.add(o);
+        });
+      });
+    }
+  }
+
   private scaleFabricToWindow(): void {
-    this.fabric.setHeight(this.size);
-    this.fabric.setWidth(this.size);
+    this.fabric.setHeight(this.client.size);
+    this.fabric.setWidth(this.client.size);
   }
 
   private setBackgroundImage(): void {
@@ -47,6 +66,10 @@ class Canvas {
 
       this.scaleOwnBrushSize();
       this.scaleOtherBrushSize();
+    });
+
+    this.fabric.on('path:created', (e) => {
+      this.client.broadcastPath(e);
     });
   }
 

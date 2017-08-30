@@ -8,7 +8,7 @@ let connections = {};
 
 io.sockets.on('connection', (socket) => {
   socket.on('room', (room) => {
-    connections[room] = (connections[room] || 0) + 1;
+    connections[room] = (connections[room] || 0) + 1; // TODO: Revisit.  This probably can be done more cleanly
     socket.join(room);
     socket.emit('identification', {
       colour: connections[room],
@@ -16,8 +16,8 @@ io.sockets.on('connection', (socket) => {
     });
   });
 
-  socket.on('draw_line', (data) => {
-    io.sockets.in(data.room).emit('draw_line', data);
+  socket.on('draw_path', (data) => {
+    io.sockets.in(data.room).emit('draw_path', data);
   });
 
   socket.on('clear', (data) => {

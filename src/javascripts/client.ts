@@ -1,10 +1,27 @@
+declare let socket;
+
 class Client {
+  public size: number;
   public room: string;
   public id: string;
   public colour: string;
+  public socket: any; // Since TS doesn't play nice with non-node libs
 
-  constructor() {
+  constructor(socket) {
+    this.size = Math.min(window.innerWidth, window.innerHeight); // So canvas won't exceed the browser height
     this.room = window.location.href.split('/').pop();
+    this.socket = socket;
+  }
+
+  public broadcastPath(e): void {
+    e.path.senderId = this.id; // So that we can identify what lines are our own, since `draw_line` events from self are ignored
+
+    this.socket.emit('draw_path', {
+      path: e.path.toJSON(),
+      room: this.room,
+      size: this.size,
+      sender: this.id
+    });
   }
 
   public assignColour(connectionNumber: number): string {
